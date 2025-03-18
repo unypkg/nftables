@@ -80,7 +80,8 @@ unset LD_RUN_PATH
 sh autogen.sh
 
 ./configure \
-    --prefix=/uny/pkg/"$pkgname"/"$pkgver"
+    --prefix=/uny/pkg/"$pkgname"/"$pkgver" \
+    --disable-man-doc
 
 make -j"$(nproc)"
 make -j"$(nproc)" install
