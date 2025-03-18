@@ -11,7 +11,7 @@ set -vx
 wget -qO- uny.nu/pkg | bash -s buildsys
 
 ### Installing build dependencies
-#unyp install python expat openssl
+unyp install libmnl libnftnl
 
 #pip3_bin=(/uny/pkg/python/*/bin/pip3)
 #"${pip3_bin[0]}" install --upgrade pip
@@ -35,7 +35,7 @@ mkdir -pv /uny/sources
 cd /uny/sources || exit
 
 pkgname="nftables"
-pkggit="https://github.com/nftables/nftables.git refs/tags/*"
+pkggit="https://git.netfilter.org/nftables refs/tags/*"
 gitdepth="--depth=1"
 
 ### Get version info from git remote
@@ -77,11 +77,12 @@ get_include_paths
 
 unset LD_RUN_PATH
 
+sh autogen.sh
+
 ./configure \
     --prefix=/uny/pkg/"$pkgname"/"$pkgver"
 
 make -j"$(nproc)"
-make -j"$(nproc)" check 
 make -j"$(nproc)" install
 
 ####################################################
