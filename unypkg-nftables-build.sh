@@ -81,6 +81,7 @@ sh autogen.sh
 
 ./configure \
     --prefix=/uny/pkg/"$pkgname"/"$pkgver" \
+    --with-cli=readline \
     --disable-man-doc
 
 make -j"$(nproc)"
