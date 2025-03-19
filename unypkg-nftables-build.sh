@@ -87,6 +87,48 @@ sh autogen.sh
 make -j"$(nproc)"
 make -j"$(nproc)" install
 
+tee /uny/pkg/"$pkgname"/"$pkgver"/etc/uny-nftables.service <<EOF
+[Unit]
+Description=nftables
+Documentation=man:nft(8) http://wiki.nftables.org
+Wants=network-pre.target
+Before=network-pre.target shutdown.target
+Conflicts=shutdown.target
+DefaultDependencies=no
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+StandardInput=null
+ProtectSystem=full
+ProtectHome=true
+ExecStart=/uny/pkg/$pkgname/$pkgver/sbin/nft -f /etc/uny/nftables.conf
+ExecReload=/uny/pkg/$pkgname/$pkgver/sbin/nft -f /etc/uny/nftables.conf
+ExecStop=/uny/pkg/$pkgname/$pkgver/sbin/nft flush ruleset
+
+[Install]
+WantedBy=sysinit.target
+Alias=nftables.service nft.service
+EOF
+
+tee /uny/pkg/"$pkgname"/"$pkgver"/etc/nftables.conf <<EOF
+#!/usr/sbin/nft -f
+
+flush ruleset
+
+table inet filter {
+        chain input {
+                type filter hook input priority filter;
+        }
+        chain forward {
+                type filter hook forward priority filter;
+        }
+        chain output {
+                type filter hook output priority filter;
+        }
+}
+EOF
+
 ####################################################
 ### End of individual build script
 
